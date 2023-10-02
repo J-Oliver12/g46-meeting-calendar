@@ -10,7 +10,7 @@ public class User {
 
     public User(String username) {
         this.username = username;
-        newPassword();
+        newpassword();
     }
 
     public User(String username, String password) {
@@ -26,11 +26,12 @@ public class User {
         return password;
     }
 
-    public String userInfo() {
-        return "User " + username + " has been created successfully. " + " PWD: " + password;
+
+    public String string() {
+        return "User " + username + " has been created succefully. " + " PWD: " + password;
     }
 
-    public void newPassword() {
+    public void newpassword() {
         this.password = generateRandomPassword();
     }
 
@@ -46,6 +47,4 @@ public class User {
         }
         return stringBuilder.toString();
     }
-
-
 }
