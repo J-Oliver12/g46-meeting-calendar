@@ -7,15 +7,22 @@ public class User {
 
     private final String username;
     private String password;
+    private boolean expired;
 
     public User(String username) {
         this.username = username;
-        newpassword();
+        newPassword();
     }
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public User(String username, String password, boolean expired) {
+        this.username = username;
+        this.password = password;
+        this.expired = expired;
     }
 
     public String getUsername() {
@@ -26,12 +33,16 @@ public class User {
         return password;
     }
 
-
-    public String string() {
-        return "User " + username + " has been created succefully. " + " PWD: " + password;
+    public String userInfo() {
+        return "Username " + username + " Password: " + password;
     }
 
-    public void newpassword() {
+    public boolean isExpired() {
+        return expired;
+    }
+
+
+    public void newPassword() {
         this.password = generateRandomPassword();
     }
 
@@ -47,4 +58,5 @@ public class User {
         }
         return stringBuilder.toString();
     }
+
 }

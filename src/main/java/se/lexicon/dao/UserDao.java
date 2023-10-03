@@ -1,6 +1,6 @@
 package se.lexicon.dao;
 
-import se.lexicon.exception.AutenticationFailedException;
+import se.lexicon.exception.AuthenticationFailedException;
 import se.lexicon.exception.UserExpiredException;
 import se.lexicon.model.User;
 
@@ -12,5 +12,5 @@ public interface UserDao {
 
     Optional<User> findByUsername(String username);
 
-    boolean authenticate(User user) throws AutenticationFailedException, UserExpiredException;
+    boolean authenticate(User user) throws AuthenticationFailedException, UserExpiredException;
 }
