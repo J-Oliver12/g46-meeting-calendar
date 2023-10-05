@@ -4,6 +4,7 @@ import se.lexicon.model.Meeting;
 import se.lexicon.model.MeetingCalendar;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface MeetingCalendarDao {
@@ -12,10 +13,12 @@ public interface MeetingCalendarDao {
 
     Optional<MeetingCalendar> findById(int Id);
 
-    Collection<MeetingCalendar> findByUsername(String username);
+    Optional<MeetingCalendar> findByUsername(String username);
 
     Optional<MeetingCalendar> findByTitle(String title);
 
     boolean deleteCalendar(int id);
+
+    // Add methods for updating calendars as needed...
 
 }

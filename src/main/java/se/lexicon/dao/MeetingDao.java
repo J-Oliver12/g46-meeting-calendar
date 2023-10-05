@@ -15,4 +15,6 @@ public interface MeetingDao {
 
     boolean deleteMeeting(int meetingId);
 
+    // Add methods for updating meetings  as needed...
+
 }

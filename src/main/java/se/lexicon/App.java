@@ -1,7 +1,10 @@
 package se.lexicon;
 
+import se.lexicon.controller.CalendarController;
+import se.lexicon.dao.MeetingCalendarDao;
 import se.lexicon.dao.MeetingDao;
 import se.lexicon.dao.UserDao;
+import se.lexicon.dao.impl.MeetingCalendarDaoImpl;
 import se.lexicon.dao.impl.MeetingDaoImpl;
 import se.lexicon.dao.impl.UserDaoImpl;
 
@@ -9,6 +12,8 @@ import se.lexicon.dao.impl.db.MeetingCalendarDbConnection;
 import se.lexicon.exception.DBConnectionException;
 import se.lexicon.model.Meeting;
 import se.lexicon.model.User;
+import se.lexicon.view.CalendarConsoleUI;
+import se.lexicon.view.CalendarView;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -18,7 +23,7 @@ public class App
 {
     public static void main( String[] args )
     {
-        /*try {
+       /* try {
 
             Connection connection = MeetingCalendarDbConnection.getConnection();
 
@@ -26,7 +31,7 @@ public class App
             UserDao userDao = new UserDaoImpl(connection);
 
 
-            User newUser = userDao.createUser("admin");
+            User newUser = userDao.createUser("test");
 
 
             System.out.println("User created successfully:");
@@ -43,6 +48,20 @@ public class App
         } catch (Exception e) {
             System.err.println("An error occurred: " + e.getMessage());
         }*/
+
+        System.setProperty("log4j.configurationFile", "log4j2.properties");
+
+        Connection mysqlConnection = MeetingCalendarDbConnection.getConnection();
+        CalendarView view = new CalendarConsoleUI();
+        UserDao userDao = new UserDaoImpl(mysqlConnection);
+        MeetingCalendarDao calendarDao = new MeetingCalendarDaoImpl(mysqlConnection);
+        MeetingDao meetingDao = new MeetingDaoImpl(mysqlConnection);
+
+        CalendarController controller = new CalendarController(view,userDao, calendarDao, meetingDao);
+        controller.run();
+
     }
+
+
 
 }

@@ -1,5 +1,7 @@
 package se.lexicon.dao.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import se.lexicon.dao.UserDao;
 import se.lexicon.exception.AuthenticationFailedException;
 import se.lexicon.exception.MySQLException;
@@ -13,6 +15,8 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public class UserDaoImpl implements UserDao {
+
+    private static final Logger log = LogManager.getLogger(UserDaoImpl.class);
 
     private Connection connection;
 
@@ -28,7 +32,7 @@ public class UserDaoImpl implements UserDao {
         ){
             User user = new User(username);
             preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(2, user.getHashedPassword());
             int affectedRows = preparedStatement.executeUpdate();
             if (affectedRows == 0) {
                 throw new MySQLException("Creating user failed, no rows affected");
@@ -67,22 +71,27 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean authenticate(User user) throws AuthenticationFailedException, UserExpiredException {
-        String query = "SELECT * FROM USERS WHERE USERNAME = ? and _PASSWORD = ?";
+        String query = "SELECT * FROM USERS WHERE USERNAME = ?";
+        log.info("authenticate user: {}:", user.getUsername());;
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
         ) {
 
             preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getPassword());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
 
                 boolean isExpired = resultSet.getBoolean("EXPIRED");
                 if (isExpired) {
+                    log.warn("User is Expired. username: {}", user.getUsername());
                     throw new UserExpiredException("User is Expired. username: " + user.getUsername());
                 }
 
+                String hashedPassword = resultSet.getString("_PASSWORD");
+                user.checkHash(hashedPassword);
+
             } else {
+                log.warn("Authentication failed. Invalid credentials.");
                 throw new AuthenticationFailedException("Authentication failed. Invalid credentials.");
             }
 
@@ -91,8 +100,24 @@ public class UserDaoImpl implements UserDao {
         } catch (SQLException e) {
             throw new MySQLException("Error occurred while authenticating user by username: " + user.getUsername(), e);
         }
-
     }
 
+    @Override
+    public String getHashedPassword(User user) {
+        String query = "SELECT _PASSWORD FROM USERS WHERE USERNAME = ?";
+        try (
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+        ) {
+            preparedStatement.setString(1, user.getUsername());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("_PASSWORD");
+            } else {
+                return null; // User not found
+            }
+        } catch (SQLException e) {
+            throw new MySQLException("Error occurred while retrieving hashed password for user: " + user.getUsername(), e);
+        }
+    }
 
 }

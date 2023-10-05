@@ -13,4 +13,8 @@ public interface UserDao {
     Optional<User> findByUsername(String username);
 
     boolean authenticate(User user) throws AuthenticationFailedException, UserExpiredException;
+
+    String getHashedPassword(User user);
+
+    // add more methods according to project functionalities...
 }
